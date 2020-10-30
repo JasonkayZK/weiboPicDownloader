@@ -124,3 +124,6 @@ dist
 *.iml
 out
 gen
+
+#Electron-builder output
+/dist_electron
