@@ -1,0 +1,19 @@
+{
+  "name": "weibo-pic-downloader",
+  "version": "1.0.0",
+  "description": "A tool to download picture from weibo",
+  "main": "index.js",
+  "scripts": {
+    "run": "npx electron ."
+  },
+  "keywords": [
+    "weibo",
+    "picture",
+    "downloader"
+  ],
+  "author": "jasonkay",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^10.1.5"
+  }
+}
