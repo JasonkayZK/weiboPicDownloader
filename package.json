@@ -27,25 +27,10 @@
     "vue-cli-plugin-electron-builder": "~2.0.0-rc.5",
     "vue-template-compiler": "^2.6.11"
   },
-  "build": {
-    "appId": "com.github.jasonkayzk",
-    "copyright": "MIT",
-    "productName": "webbopicdownloader",
-    "dmg": {
-      "window": {
-        "width": 350,
-        "height": 650
-      }
-    },
-    "files": [
-      "dist/**/*"
-    ],
-    "win": {
-      "icon": "public/favicon.ico",
-      "target": [
-        "nsis",
-        "zip"
-      ]
-    }
+  "description": "A no-login tool to download picture from Weibo",
+  "author": {
+    "name": "jasonkay",
+    "email": "271226192@qq.com",
+    "url": "https://jasonkayzk.github.io/"
   }
 }
