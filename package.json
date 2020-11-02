@@ -13,6 +13,8 @@
   },
   "main": "background.js",
   "dependencies": {
+    "element-ui": "^2.14.0",
+    "request": "^2.88.2",
     "vue": "^2.6.11"
   },
   "devDependencies": {
@@ -24,5 +26,26 @@
     "eslint-plugin-vue": "^6.2.2",
     "vue-cli-plugin-electron-builder": "~2.0.0-rc.5",
     "vue-template-compiler": "^2.6.11"
+  },
+  "build": {
+    "appId": "com.github.jasonkayzk",
+    "copyright": "MIT",
+    "productName": "webbopicdownloader",
+    "dmg": {
+      "window": {
+        "width": 350,
+        "height": 650
+      }
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "win": {
+      "icon": "public/favicon.ico",
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    }
   }
 }
