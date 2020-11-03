@@ -1,5 +1,6 @@
 'use strict'
 
+/* global __static */
 import {app, protocol, BrowserWindow, ipcMain, dialog} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS_DEVTOOLS} from 'electron-devtools-installer'
@@ -7,6 +8,7 @@ import request from 'request'
 import util from 'util'
 import path from 'path'
 import fs from 'fs'
+import {formatDate} from "element-ui/src/utils/date-util";
 
 const getPromise = util.promisify(request.get);
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -25,7 +27,8 @@ async function createWindow() {
         height: 650,
         webPreferences: {
             nodeIntegration: true
-        }
+        },
+        icon: path.join(__static, 'favicon.ico')
     })
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -64,9 +67,9 @@ function regCrawlList() {
 
 async function getAllImageUrl(userId, startDate, endDate, page, sender) {
     let url = "https://m.weibo.cn/api/container/getIndex?count=25&page=" + page + "&containerid=" + userIdToContainerId(userId);
-    console.log(url);
 
     let cards = [];
+    let lastCreateAt = new Date();
     await getPromise(url).then((value) => {
         console.log(value.body)
         let jsonObj = JSON.parse(value.body);
@@ -74,8 +77,10 @@ async function getAllImageUrl(userId, startDate, endDate, page, sender) {
         for (let i = 0; i < cards.length; i++) {
             let mblog = cards[i].mblog;
             if (mblog != null) {
-                let createAt = mblog.created_at.toString()
-                if (!checkDate(createAt, startDate, endDate)) {
+                lastCreateAt = mblog.created_at.toString()
+                lastCreateAt = getDate(transWeiboDateStrToTimeStamp(lastCreateAt))
+                if (!checkDate(lastCreateAt, startDate, endDate)) {
+                    console.log(lastCreateAt, startDate, endDate)
                     continue;
                 }
                 let pics = mblog.pics;
@@ -86,7 +91,7 @@ async function getAllImageUrl(userId, startDate, endDate, page, sender) {
                             let iUrl = large.url
                             mainList.push({
                                 "url": iUrl,
-                                "date": createAt,
+                                "date": formatDate(lastCreateAt),
                             })
                         }
                     }
@@ -96,17 +101,26 @@ async function getAllImageUrl(userId, startDate, endDate, page, sender) {
         sender.send('crawl-list-add', page, mainList.length)
     })
 
-    // return cards.length;
-    return 0;
+    // 如果最后一个微博已经小于开始，可直接退出；
+    return cards.length === 0 ? 0 : (lastCreateAt.getTime() >= startDate.getTime());
 }
 
 function handleList(urlList, sender) {
     // 去重
     urlList = Array.from(new Set(urlList))
 
+    // 空数组直接取消下载
+    if (urlList.length === 0) {
+        sender.send('crawl-download-canceled')
+    }
+
     dialog
         .showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
         .then(async res => {
+            if (res.canceled) {
+                sender.send('crawl-download-canceled')
+            }
+
             let savePathPrefix = res.filePaths[0]
             if (savePathPrefix == null || savePathPrefix === "") {
                 return
@@ -119,68 +133,61 @@ function handleList(urlList, sender) {
         })
 }
 
-function userIdToContainerId(userId) {
-    if (userId === null) {
-        return "0";
-    }
-    return "107603" + userId;
-}
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
-
 function checkDate(checkDate, startDate, endDate) {
-    // console.log(checkDate, startDate, endDate)
-    return true
+    return checkDate.getTime() >= startDate.getTime() && checkDate.getTime() <= endDate.getTime();
+}
+
+function getDate(dateTimestamp) {
+    return new Date(dateTimestamp);
 }
 
 function transWeiboDateStrToTimeStamp(weiboDateStr) {
-    if (weiboDateStr == null || "".equals(weiboDateStr)) {
+    console.log("translate before: " + weiboDateStr)
+    if (weiboDateStr == null || "" === weiboDateStr) {
         return 0;
     }
-    if (weiboDateStr.contains("秒前")) {
+    if (weiboDateStr.search("秒前") >= 0) {
         weiboDateStr = weiboDateStr.replace("秒前", "");
-        let second = Integer.valueOf(weiboDateStr);
-        return System.currentTimeMillis() - second * 1000;
+        let second = parseInt(weiboDateStr);
+        return new Date().getTime() - second * 1000;
     }
-    if (weiboDateStr.contains("分钟前")) {
+    if (weiboDateStr.search("分钟前") >= 0) {
         weiboDateStr = weiboDateStr.replace("分钟前", "");
-        let second = Integer.valueOf(weiboDateStr);
-        return System.currentTimeMillis() - second * 1000 * 60;
+        let minite = parseInt(weiboDateStr);
+        return new Date().getTime() - minite * 1000 * 60;
     }
-    if (weiboDateStr.contains("小时前")) {
+    if (weiboDateStr.search("小时前") >= 0) {
         weiboDateStr = weiboDateStr.replace("小时前", "");
-        let second = Integer.valueOf(weiboDateStr);
-        return System.currentTimeMillis() - second * 1000 * 3600;
+        let hours = parseInt(weiboDateStr);
+        return new Date().getTime() - hours * 1000 * 3600;
     }
-    if (weiboDateStr.contains("昨天")) {
-        let yesterdayTimestamp = new Date(System.currentTimeMillis() - 1000 * 60 * 60 * 24);
-        let simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        let yesterday = simpleDateFormat.format(yesterdayTimestamp);
-        weiboDateStr = weiboDateStr.replace("昨天", yesterday);
-        let sDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm");
-        try {
-            let date = sDateFormat.parse(weiboDateStr);
-            return date.getTime();
-        } catch (e) {
-            return 0;
-        }
+    if (weiboDateStr.search("昨天") >= 0) {
+        return new Date().getTime() - 1000 * 60 * 60 * 24
     }
-    if (weiboDateStr.contains("-")) {
+    if (weiboDateStr.search('-') >= 0) {
         if (!weiboDateStr.startsWith("20")) {
-            let year = new Date().getYear() + 1900;
+            let year = new Date().getFullYear();
             weiboDateStr = year + "-" + weiboDateStr;
         }
-        let sDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            let date = sDateFormat.parse(weiboDateStr);
-            return date.getTime();
+            return parseDate(weiboDateStr).getTime();
         } catch (e) {
             return 0;
         }
     }
     return 0;
+}
+
+function parseDate(input, format) {
+    format = format || 'yyyy-mm-dd'; // default format
+    let parts = input.match(/(\d+)/g),
+        i = 0, fmt = {};
+    // extract date-part indexes from the format
+    format.replace(/(yyyy|dd|mm)/g, function (part) {
+        fmt[part] = i++;
+    });
+
+    return new Date(parts[fmt['yyyy']], parts[fmt['mm']] - 1, parts[fmt['dd']]);
 }
 
 function getSuffix(iUrl) {
@@ -203,6 +210,17 @@ function downloadAndSave(fileUrl, targetSavePath, sender) {
     }).on('end', function () {
         sender.send('crawl-download', fileUrl)
     }).pipe(out);
+}
+
+function userIdToContainerId(userId) {
+    if (userId === null) {
+        return "0";
+    }
+    return "107603" + userId;
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 // Quit when all windows are closed.

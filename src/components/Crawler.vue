@@ -8,7 +8,7 @@
                   clearable>
         </el-input>
       </el-form-item>
-      <el-form-item label="活动时间">
+      <el-form-item label="发表时间">
         <el-col :span="11">
           <el-date-picker type="date" placeholder="开始日期" v-model="form.date1"
                           style="width: 100%;"></el-date-picker>
@@ -20,7 +20,7 @@
         </el-col>
       </el-form-item>
       <el-form-item>
-        <el-button id="submitBtn" type="primary" @click="onSubmit">立即下载</el-button>
+        <el-button id="submitBtn" type="primary" @click="onSubmit" :disabled="btnDisabledStatus">立即下载</el-button>
       </el-form-item>
     </el-form>
 
@@ -50,6 +50,7 @@
 #process-bar {
   width: 85%;
   margin-left: 42px;
+  margin-top: 15px;
 }
 
 </style>
@@ -67,8 +68,10 @@ export default {
         date2: ''
       },
       crawlListLength: 0,
+      downloaded: 0,
       downloadPercent: 0,
       showCrawlList: false,
+      btnDisabledStatus: false,
       showProcessBar: false,
       processBarColor: '#5cb87a',
       crawlListText: ''
@@ -77,13 +80,18 @@ export default {
   mounted: function () {
     this.listenAddCrawlList();
     this.listenDownloadList();
+    this.listenDownloadCanceled();
   },
   methods: {
     onSubmit() {
+      this.downloaded = 0;
       console.log(this.form.userId)
       ipcRenderer.send('crawl-list', this.form.userId, this.form.date1, this.form.date2)
       if (!this.showCrawlList) {
         this.showCrawlList = true
+      }
+      if (!this.btnDisabledStatus) {
+        this.btnDisabledStatus = true;
       }
     },
     listenAddCrawlList() {
@@ -95,16 +103,31 @@ export default {
     },
     listenDownloadList() {
       let that = this
-      let downloaded = 0
-      ipcRenderer.on('crawl-download', function (e, downloadedUrl) {
+      that.downloaded = 0
+      ipcRenderer.on('crawl-download', function () {
         if (!that.showProcessBar) {
           that.showProcessBar = true
         }
-        console.log(downloadedUrl)
-        downloaded++;
-        that.downloadPercent = downloaded / that.crawlListLength * 100
+        that.downloaded++;
+        that.downloadPercent = Number((that.downloaded / that.crawlListLength * 100).toFixed(2))
+
+        // 下载完成
+        console.log(that.downloaded, that.crawlListLength)
+
+        if (that.downloaded === that.crawlListLength) {
+          that.btnDisabledStatus = false;
+          that.downloaded = 0;
+          that.crawlListText = '下载已完成';
+        }
       })
     },
-  }
+    listenDownloadCanceled() {
+      let that = this
+      ipcRenderer.on('crawl-download-canceled', function () {
+        that.btnDisabledStatus = false;
+        that.downloaded = 0;
+      })
+    }
+  },
 };
 </script>
