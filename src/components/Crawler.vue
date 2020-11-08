@@ -85,7 +85,16 @@ export default {
   methods: {
     onSubmit() {
       this.downloaded = 0;
-      console.log(this.form.userId)
+
+      // Check valid
+      if (this.form.date1.getTime() > this.form.date2.getTime()) {
+        let temp = this.form.date1;
+        this.form.date1 = this.form.date2;
+        this.form.date2 = temp;
+      }
+
+      this.form.date2.setHours(23, 59, 59, 999);
+
       ipcRenderer.send('crawl-list', this.form.userId, this.form.date1, this.form.date2)
       if (!this.showCrawlList) {
         this.showCrawlList = true
