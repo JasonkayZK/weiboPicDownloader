@@ -39,6 +39,10 @@ npm run electron:build -- --mac
 npm run electron:build -- --linux deb
 ```
 
+>   交叉编译时可能会遇到问题，解决方案见：
+>   
+>   [在Win10下交叉编译Electron项目](https://jasonkayzk.github.io/2020/11/08/在Win10下交叉编译Electron项目/)
+
 更多编译选项，见：
 
 >   Vue CLI Plugin Electron Builder官方文档：
