@@ -49,6 +49,14 @@ npm run electron:build -- --linux deb
 >
 >   [Vue CLI Plugin Electron Builder](https://nklayman.github.io/vue-cli-plugin-electron-builder/)
 
+**③ 本地调试**
+
+使用yarn或npm安装依赖完成后，使用下面的命令进入本地开发调试：
+
+```bash
+npm run electron:serve
+```
+
 ### 使用方法
 
 **① 运行并填写信息**
