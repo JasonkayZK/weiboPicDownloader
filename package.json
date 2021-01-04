@@ -41,7 +41,7 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "icon": "build/icons/icon.ico"
     },
     "win": {
       "icon": "build/icons/icon.ico"
@@ -52,7 +52,9 @@
   },
   "dependencies": {
     "vue": "^2.5.16",
-    "vue-electron": "^1.0.6"
+    "vue-electron": "^1.0.6",
+    "element-ui": "^2.14.0",
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "ajv": "^6.5.0",
