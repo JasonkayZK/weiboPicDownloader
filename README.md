@@ -33,18 +33,10 @@ yarn install
 
 ```bash
 # win平台：
-npm run electron:build -- --win nsis
-# mac平台：
-npm run electron:build -- --mac
-# linux平台：
-npm run electron:build -- --linux deb
+npm run build
 ```
 
->   交叉编译时可能会遇到问题，解决方案见：
->   
->   [在Win10下交叉编译Electron项目](https://jasonkayzk.github.io/2020/11/08/在Win10下交叉编译Electron项目/)
-
-更多编译选项，见：
+更多编译选项(如跨平台编译)，见：
 
 >   Vue CLI Plugin Electron Builder官方文档：
 >
@@ -55,7 +47,7 @@ npm run electron:build -- --linux deb
 使用yarn或npm安装依赖完成后，使用下面的命令进入本地开发调试：
 
 ```bash
-npm run electron:serve
+npm run dev
 ```
 
 ### 使用方法
