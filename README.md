@@ -32,15 +32,30 @@ yarn install
 编译本项目：
 
 ```bash
-# win平台：
+# 编译对应平台：
 npm run build
 ```
 
-更多编译选项(如跨平台编译)，见：
-
+>   也可以修改`package.json`中的配置，如在`scripts`中添加一条：
+>
+>   ```json
+>   {
+>     ...
+>     "scripts": {
+>       "build": "node .electron-vue/build.js && electron-builder",
+>       "build:win": "node .electron-vue/build.js && electron-builder --win --x64",
+>     },
+>     ...    
+>   }
+>   ```
+>
+>   来使用`npm run build:win`编译win平台下的64位版本；
+>
+>   更多编译选项(如跨平台编译)，见：
+>
 >   Vue CLI Plugin Electron Builder官方文档：
 >
->   [Vue CLI Plugin Electron Builder](https://nklayman.github.io/vue-cli-plugin-electron-builder/)
+>   -   [Vue CLI Plugin Electron Builder](https://nklayman.github.io/vue-cli-plugin-electron-builder/)
 
 **③ 本地调试**
 
