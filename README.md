@@ -40,15 +40,13 @@ npm run build
 >
 >   ```json
 >   {
->     ...
 >     "scripts": {
 >       "build": "node .electron-vue/build.js && electron-builder",
 >       "build:win": "node .electron-vue/build.js && electron-builder --win --x64",
->     },
->     ...    
->   }
->   ```
->
+>     }
+>    }
+>    ```
+>   
 >   来使用`npm run build:win`编译win平台下的64位版本；
 >
 >   更多编译选项(如跨平台编译)，见：
@@ -56,6 +54,45 @@ npm run build
 >   Vue CLI Plugin Electron Builder官方文档：
 >
 >   -   [Vue CLI Plugin Electron Builder](https://nklayman.github.io/vue-cli-plugin-electron-builder/)
+
+>   **关于Mac环境下编译：**
+>
+>   在Mac环境下编译可能会出现类似于下面的错误：
+>
+>   ```
+>   Can't locate Mac/Memory.pm in @INC (you may need to install the Mac::Memory module)
+>   ```
+>
+>   这是生成dmg包出现的问题，可以修改`package.json`删除：
+>
+>   ```json
+>   "dmg": {
+>       "contents": [
+>           {
+>               "x": 410,
+>               "y": 150,
+>               "type": "link",
+>               "path": "/Applications"
+>           },
+>           {
+>               "x": 130,
+>               "y": 150,
+>               "type": "file"
+>           }
+>       ]
+>   }
+>   ```
+>
+>   并在mac中添加`target`：
+>
+>   ```json
+>   "mac": {
+>       "icon": "build/icons/icon.ico",
+>       "target": "zip"
+>   }
+>   ```
+>
+>   即可！
 
 **③ 本地调试**
 
