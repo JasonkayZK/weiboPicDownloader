@@ -1,12 +1,13 @@
 {
   "name": "weibo_pic_downloader",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "author": "jasonkayzk 271226192@qq.com",
   "description": "一个使用Electron-Vue编写的免登录下载微博图片的桌面爬虫应用",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
+    "build:linux_zip": "node .electron-vue/build.js && electron-builder --linux zip",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
