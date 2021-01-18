@@ -103,10 +103,11 @@ function regCrawlList() {
 async function getAllImageUrl(userId, startDate, endDate, page, sender) {
   let url = "https://m.weibo.cn/api/container/getIndex?count=25&page=" + page + "&containerid=" + userIdToContainerId(userId);
 
+  console.log("request url: " + url)
+
   let cards = [];
   let lastCreateAt = new Date();
   await getPromise(url).then((value) => {
-    console.log(value.body)
     let jsonObj = JSON.parse(value.body);
     cards = jsonObj.data.cards;
     for (let i = 0; i < cards.length; i++) {
@@ -114,6 +115,9 @@ async function getAllImageUrl(userId, startDate, endDate, page, sender) {
       if (mblog != null) {
         lastCreateAt = mblog.created_at.toString()
         lastCreateAt = getDate(transWeiboDateStrToTimeStamp(lastCreateAt))
+
+        console.log("lastCreateAt: " + lastCreateAt)
+
         if (!checkDate(lastCreateAt, startDate, endDate)) {
           console.log(lastCreateAt, startDate, endDate)
           continue;
@@ -153,7 +157,6 @@ function handleList(urlList, sender) {
       .showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']}, async (filePaths, bookMarks) => {
         let savePathPrefix = filePaths[0]
 
-        console.log(savePathPrefix)
         if (savePathPrefix == null || savePathPrefix === "") {
           return
         }
@@ -170,6 +173,7 @@ function checkDate(checkDate, startDate, endDate) {
 }
 
 function getDate(dateTimestamp) {
+  console.log("dateTimestamp: " + dateTimestamp)
   return new Date(dateTimestamp);
 }
 
@@ -207,7 +211,7 @@ function transWeiboDateStrToTimeStamp(weiboDateStr) {
       return 0;
     }
   }
-  return 0;
+  return Date.parse(weiboDateStr);
 }
 
 function parseDate(input, format) {
