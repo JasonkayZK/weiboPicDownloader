@@ -1,4 +1,4 @@
-## weibo-pic-downloader
+# **weibo-pic-downloader**
 
 <p align="center">
 <image src="./public/Logo.png" width="320px" height="310px"></image>
@@ -7,7 +7,20 @@
     </div>
 </p>
 
-### 安装方法
+
+## **声明**
+
+**本项目已不再维护，最新版Electron已无法编译此项目！**
+
+**如果有其他需要，请Fork本仓库，或直接修改本仓库代码自行实现！**
+
+具体实现逻辑，见：
+
+-   [手把手教你使用Electron开发新浪微博免登录图片下载器](https://jasonkayzk.github.io/2020/11/04/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E4%BD%BF%E7%94%A8Electron%E5%BC%80%E5%8F%91%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A%E5%85%8D%E7%99%BB%E5%BD%95%E5%9B%BE%E7%89%87%E4%B8%8B%E8%BD%BD%E5%99%A8/)
+
+
+
+## 安装方法
 
 **① 压缩包方式安装**
 
@@ -108,7 +121,7 @@ npm run build
 npm run dev
 ```
 
-### 使用方法
+## **使用方法**
 
 **① 运行并填写信息**
 
@@ -172,7 +185,7 @@ npm run dev
 
 ![weiboPicDownloader_4.png](./demo_img/weiboPicDownloader_4.png)
 
-### 更多说明
+## **更多说明**
 
 本项目采用MIT许可，大家可以在本代码的基础之上自由的做二次开发！
 
